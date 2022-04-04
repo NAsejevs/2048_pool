@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using GooglePlayGames;
-using UnityEngine.SocialPlatforms;
+using GooglePlayGames.BasicApi;
 
 public class PlayerController : MonoBehaviour
 {
@@ -293,9 +293,12 @@ public class PlayerController : MonoBehaviour
     }
 
     public void OpenLeaderboard() {
-        Social.localUser.Authenticate((bool success) => {
-            if(success) {
-                PlayGamesPlatform.Instance.ShowLeaderboardUI("CgkI1aW6uKgFEAIQAQ");
+        PlayGamesPlatform.Instance.Authenticate((status) =>{
+            switch(status) {
+                case SignInStatus.Success: {
+                    PlayGamesPlatform.Instance.ShowLeaderboardUI("CgkI1aW6uKgFEAIQAQ");
+                    break;
+                }
             }
         });
     }

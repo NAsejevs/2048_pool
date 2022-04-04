@@ -22,22 +22,20 @@ public class GoogleAdMob : MonoBehaviour
             googleAdMob = this;
             DontDestroyOnLoad(this);
 
-            string appId = "ca-app-pub-8598659276813255~4720368080";
+            MobileAds.Initialize(initStatus => { });
 
-            // Initialize the Google Mobile Ads SDK.
-            MobileAds.Initialize(appId);
+            List<string> deviceIds = new List<string>();
+            Debug.Log(SystemInfo.deviceUniqueIdentifier);
+            deviceIds.Add(SystemInfo.deviceUniqueIdentifier);
+            RequestConfiguration requestConfiguration = new RequestConfiguration
+                .Builder()
+                .SetTestDeviceIds(deviceIds)
+                .build();
 
-            PlayGamesClientConfiguration config = new PlayGamesClientConfiguration.Builder().Build();
+            MobileAds.SetRequestConfiguration(requestConfiguration);
 
-            PlayGamesPlatform.InitializeInstance(config);
-            // recommended for debugging:
-            PlayGamesPlatform.DebugLogEnabled = true;
-            // Activate the Google Play Games platform
             PlayGamesPlatform.Activate();
-
-            Social.localUser.Authenticate((bool success) => {
-                // handle success or failure
-            });
+            PlayGamesPlatform.Instance.Authenticate((status) => { });
         }
         else
         {
@@ -60,8 +58,13 @@ public class GoogleAdMob : MonoBehaviour
 
     public void RequestBanner()
     {
-        // string adUnitId = "ca-app-pub-3940256099942544/6300978111"; // test ad
-        string adUnitId = "ca-app-pub-8598659276813255/7607042411";
+        #if UNITY_ANDROID
+            string adUnitId = "ca-app-pub-8598659276813255/7607042411";
+        #elif UNITY_IPHONE
+            string adUnitId = "ca-app-pub-8598659276813255/1450143423";
+        #else
+            string adUnitId = "unexpected_platform";
+        #endif
 
         // Create a 320x50 banner at the top of the screen.
         bannerView = new BannerView(adUnitId, AdSize.SmartBanner, AdPosition.Bottom);
@@ -76,8 +79,13 @@ public class GoogleAdMob : MonoBehaviour
 
     public void RequestInterstitial()
     {
-        //string adUnitId = "ca-app-pub-3940256099942544/1033173712"; // test ad
-        string adUnitId = "ca-app-pub-8598659276813255/7200752268";
+        #if UNITY_ANDROID
+            string adUnitId = "ca-app-pub-8598659276813255/7200752268";
+        #elif UNITY_IPHONE
+            string adUnitId = "ca-app-pub-8598659276813255~6702470104";
+        #else
+            string adUnitId = "unexpected_platform";
+        #endif
 
         // Initialize an InterstitialAd.
         this.interstitial = new InterstitialAd(adUnitId);
